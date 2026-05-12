@@ -1,21 +1,23 @@
 """
 Thin Supabase wrapper. Service-role key only - server-side use.
+All tables live in the `ads` schema (set as the default for this client).
 """
 import os
-from supabase import create_client, Client
+from supabase import create_client, Client, ClientOptions
 
 
 _client: Client | None = None
+SCHEMA = "ads"
 
 
 def supabase() -> Client:
     global _client
     if _client is None:
-        url = os.environ.get("SUPABASE_URL")
+        url = os.environ.get("SUPABASE_URL", "").rstrip("/")
         key = os.environ.get("SUPABASE_SERVICE_ROLE_KEY")
         if not url or not key:
             raise RuntimeError("SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY missing")
-        _client = create_client(url, key)
+        _client = create_client(url, key, options=ClientOptions(schema=SCHEMA))
     return _client
 
 

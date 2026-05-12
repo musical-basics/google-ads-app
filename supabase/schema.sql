@@ -1,7 +1,13 @@
--- Belgium concert ad agent - minimal schema
--- Run once against the target Supabase project. Idempotent.
+-- Belgium concert ad agent. Minimal schema.
+-- All tables live under the `ads` schema so other ad-related tooling can share it.
+-- Idempotent. Safe to re-run.
 
-create table if not exists belgium_campaign_state (
+create schema if not exists ads;
+
+-- Schema-level access (must come before table grants stick on existing tables)
+grant usage on schema ads to postgres, anon, authenticated, service_role;
+
+create table if not exists ads.belgium_campaign_state (
   id uuid primary key default gen_random_uuid(),
   campaign_id text unique,
   resource_name text,
@@ -19,7 +25,7 @@ create table if not exists belgium_campaign_state (
   last_synced_at timestamptz
 );
 
-create table if not exists belgium_daily_performance (
+create table if not exists ads.belgium_daily_performance (
   date date,
   campaign_id text,
   ad_group_id text,
@@ -32,7 +38,7 @@ create table if not exists belgium_daily_performance (
   primary key (date, campaign_id, ad_group_id)
 );
 
-create table if not exists belgium_ticket_sales (
+create table if not exists ads.belgium_ticket_sales (
   shopify_order_id text primary key,
   order_name text,
   customer_email text,
@@ -50,7 +56,7 @@ create table if not exists belgium_ticket_sales (
   raw jsonb
 );
 
-create table if not exists belgium_agent_log (
+create table if not exists ads.belgium_agent_log (
   id uuid primary key default gen_random_uuid(),
   ran_at timestamptz default now(),
   action text,
@@ -58,6 +64,30 @@ create table if not exists belgium_agent_log (
   success boolean
 );
 
-create index if not exists idx_belgium_daily_performance_date on belgium_daily_performance (date);
-create index if not exists idx_belgium_ticket_sales_ordered_at on belgium_ticket_sales (ordered_at);
-create index if not exists idx_belgium_agent_log_ran_at on belgium_agent_log (ran_at desc);
+create index if not exists idx_belgium_daily_performance_date on ads.belgium_daily_performance (date);
+create index if not exists idx_belgium_ticket_sales_ordered_at on ads.belgium_ticket_sales (ordered_at);
+create index if not exists idx_belgium_agent_log_ran_at on ads.belgium_agent_log (ran_at desc);
+
+-- Lock down with RLS. service_role bypasses RLS by design so the server-side
+-- code keeps full access. anon and authenticated get nothing because no
+-- policies are defined for them.
+alter table ads.belgium_campaign_state enable row level security;
+alter table ads.belgium_daily_performance enable row level security;
+alter table ads.belgium_ticket_sales enable row level security;
+alter table ads.belgium_agent_log enable row level security;
+
+-- service_role full access on existing tables + sequences
+grant all on all tables in schema ads to service_role;
+grant all on all sequences in schema ads to service_role;
+grant all on all functions in schema ads to service_role;
+
+-- service_role full access on future tables + sequences (in case more get added)
+alter default privileges in schema ads grant all on tables to service_role;
+alter default privileges in schema ads grant all on sequences to service_role;
+alter default privileges in schema ads grant all on functions to service_role;
+
+-- postgres role keeps ownership-level access (Supabase SQL editor runs as postgres)
+grant all on all tables in schema ads to postgres;
+grant all on all sequences in schema ads to postgres;
+alter default privileges in schema ads grant all on tables to postgres;
+alter default privileges in schema ads grant all on sequences to postgres;
