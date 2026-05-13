@@ -74,10 +74,14 @@ def get_orders_since(since_iso: str) -> list[dict]:
     """
     Pull orders created since `since_iso` (ISO 8601). Returns raw GraphQL nodes.
     Filters at the API level for tickets only (matching ticket variant IDs).
+
+    Shopify's order search language silently drops orders when the timestamp
+    carries a `+HH:MM` offset (it expects Z or no zone). Normalize to Z.
     """
     out: list[dict] = []
     cursor: str | None = None
-    query_str = f"created_at:>={since_iso}"
+    normalized = since_iso.replace("+00:00", "Z")
+    query_str = f"created_at:>={normalized}"
     q = """
     query($query: String, $first: Int, $after: String) {
       orders(query: $query, first: $first, after: $after, sortKey: CREATED_AT) {
@@ -99,7 +103,7 @@ def get_orders_since(since_iso: str) -> list[dict]:
     }
     """
     while True:
-        data = gql(q, {"query": query_str, "first": 50, "after": cursor})
+        data = gql(q, {"query": query_str, "first": 250, "after": cursor})
         page = data["orders"]
         out.extend(page["nodes"])
         if not page["pageInfo"]["hasNextPage"]:
