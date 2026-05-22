@@ -87,6 +87,10 @@ def get_campaign_status(client: GoogleAdsClient, campaign_resource: str) -> dict
 def pull_performance(client: GoogleAdsClient, campaign_id: str, since: str) -> list[dict]:
     """
     Pull per-ad-group daily performance from `since` (YYYY-MM-DD) through today.
+
+    Note: metrics.video_views is Video Action-specific and not available on Demand Gen
+    campaigns (the successor type). We use metrics.interactions instead, which covers
+    the equivalent engagement signals on Demand Gen (clicks + video engagements).
     """
     ga_service = client.get_service("GoogleAdsService")
     query = f"""
@@ -95,7 +99,7 @@ def pull_performance(client: GoogleAdsClient, campaign_id: str, since: str) -> l
             campaign.id,
             ad_group.id,
             metrics.impressions,
-            metrics.video_views,
+            metrics.interactions,
             metrics.clicks,
             metrics.cost_micros,
             metrics.conversions,
@@ -103,6 +107,7 @@ def pull_performance(client: GoogleAdsClient, campaign_id: str, since: str) -> l
         FROM ad_group
         WHERE campaign.id = {campaign_id}
             AND segments.date >= '{since}'
+            AND segments.date <= '{date_cls.today().isoformat()}'
     """
     rows = ga_service.search(customer_id=customer_id(), query=query)
     out = []
@@ -112,7 +117,7 @@ def pull_performance(client: GoogleAdsClient, campaign_id: str, since: str) -> l
             "campaign_id": str(row.campaign.id),
             "ad_group_id": str(row.ad_group.id),
             "impressions": int(row.metrics.impressions),
-            "views": int(row.metrics.video_views),
+            "views": int(row.metrics.interactions),  # interactions = engagement on Demand Gen
             "clicks": int(row.metrics.clicks),
             "cost_cents": int(row.metrics.cost_micros) // 10_000,
             "conversions": float(row.metrics.conversions),
