@@ -43,6 +43,14 @@ UTM_CAMPAIGN = "belgium_tickets_be_2606"
 UTM_SOURCE = "google"
 UTM_MEDIUM = "video"
 
+# Ad group IDs (for A/B performance breakdown)
+AD_GROUP_SUBSCRIBERS = "196557300716"   # subscribers_and_viewers
+AD_GROUP_VIEWERS = "193972785582"       # video_viewers_only
+AD_GROUP_NAMES = {
+    "196557300716": "subscribers",
+    "193972785582": "video_viewers",
+}
+
 # Hard guardrails
 HARD_SPEND_CAP_PCT = 0.95
 HARD_DAILY_OVERSPEND_PCT = 1.30
