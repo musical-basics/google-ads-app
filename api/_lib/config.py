@@ -43,9 +43,11 @@ UTM_CAMPAIGN = "belgium_tickets_be_2606"
 UTM_SOURCE = "google"
 UTM_MEDIUM = "video"
 
-# Ad group IDs (for A/B performance breakdown)
-AD_GROUP_SUBSCRIBERS = "196557300716"   # subscribers_and_viewers
-AD_GROUP_VIEWERS = "193972785582"       # video_viewers_only
+# Ad group IDs and UTM content values (set as final_url_suffix per ad group)
+AD_GROUP_SUBSCRIBERS = "196557300716"       # subscribers_and_viewers
+AD_GROUP_VIEWERS     = "193972785582"       # video_viewers_only
+UTM_CONTENT_SUBSCRIBERS = "subscribers"     # utm_content value for subscribers ad group
+UTM_CONTENT_VIEWERS     = "video_viewers"   # utm_content value for viewers ad group
 AD_GROUP_NAMES = {
     "196557300716": "subscribers",
     "193972785582": "video_viewers",

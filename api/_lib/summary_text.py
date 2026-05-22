@@ -83,9 +83,9 @@ def render_daily_summary(date_str: str) -> str:
     vip_count      = sum(1 for s in day_sales if s.get("ticket_tier") == "vip")
     tier_str = f"{standard_count} standard, {vip_count} VIP" if (standard_count or vip_count) else "n/a"
 
-    # Attribution per ad group via utm_content (set to ad group ID in ad URLs)
-    sub_sales  = [s for s in day_sales if s.get("utm_content") == config.AD_GROUP_SUBSCRIBERS]
-    view_sales = [s for s in day_sales if s.get("utm_content") == config.AD_GROUP_VIEWERS]
+    # Attribution per ad group via utm_content (set as final_url_suffix per ad group)
+    sub_sales  = [s for s in day_sales if s.get("utm_content") == config.UTM_CONTENT_SUBSCRIBERS]
+    view_sales = [s for s in day_sales if s.get("utm_content") == config.UTM_CONTENT_VIEWERS]
 
     # ── Guardrail alerts ──────────────────────────────────────────
     g = guardrails.evaluate()
