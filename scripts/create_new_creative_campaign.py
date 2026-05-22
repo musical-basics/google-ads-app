@@ -27,7 +27,6 @@ except ImportError:
 
 from api._lib import google_ads_client, config
 from google.ads.googleads.v24.common.types import audiences as audiences_pb
-from google.ads.googleads.v24.common.types import ad_type_infos_pb2
 from google.protobuf import field_mask_pb2
 
 CID = "3152829803"
@@ -80,16 +79,7 @@ def create_campaign(client) -> str:
     camp.advertising_channel_type = client.enums.AdvertisingChannelTypeEnum.DEMAND_GEN
     camp.status = client.enums.CampaignStatusEnum.ENABLED
     camp.campaign_budget = budget_resource
-    camp.start_date = datetime.now().strftime("%Y%m%d")
-    camp.end_date = "20260610"
-
-    # Bidding: Maximize conversions
     camp.maximize_conversions.target_cpa_micros = 0
-
-    # Geo targets
-    for geo_id in GEO_TARGETS:
-        gt = camp.geo_target_type_setting
-        break  # just trigger the field existence; targeting set per criterion below
 
     cresp = camp_service.mutate_campaigns(customer_id=CID, operations=[cop])
     camp_resource = cresp.results[0].resource_name
