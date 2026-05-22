@@ -14,3 +14,6 @@ venv
 .idea
 .vscode
 client_secret_*.json
+New Ads/
+*.mp4
+*.fcpbundle
