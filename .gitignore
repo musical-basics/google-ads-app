@@ -13,3 +13,4 @@ __pycache__
 venv
 .idea
 .vscode
+client_secret_*.json
