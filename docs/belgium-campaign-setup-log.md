@@ -254,13 +254,15 @@ converted to JPEG at 85% quality, 1400px max width:
 
 ---
 
-## Current State (May 22, 2026)
+## Current State (May 23, 2026)
 
 | Item | Status |
 |---|---|
 | Campaign 1 (original creative) | ✅ Live, $20/day |
-| Campaign 2 (new creative, trimmed) | ✅ Live, $20/day |
-| Total daily spend | $40/day |
+| Campaign 2 (new creative, trimmed) | ✅ Live, $9/day |
+| Campaign 2 - subscribers_and_viewers | ✅ Created & Eligible, $0.10 CPV |
+| Campaign 2 - video_viewers_only | ✅ Created & Eligible, $0.10 CPV |
+| Total daily spend | ~$29/day (Campaign 1: $20, Campaign 2: $9) |
 | Geo targeting (both) | Belgium + Netherlands + Luxembourg |
 | Organic ticket sales | 9 (pre-ads, not attributed to Google) |
 | Attribution tracking | Working (Shopify UTM → Supabase) |
