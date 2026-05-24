@@ -47,8 +47,8 @@ query = f"""
         campaign.id,
         campaign.name,
         campaign.status,
-        campaign.start_date,
-        campaign.end_date,
+        campaign.start_date_time,
+        campaign.end_date_time,
         campaign_budget.amount_micros
     FROM campaign
     WHERE campaign.id = {CAMPAIGN_ID}
@@ -62,7 +62,7 @@ row = rows[0]
 daily_budget_cents = row.campaign_budget.amount_micros // 10_000
 print(f"  ✓ Found: [{row.campaign.status.name}] {row.campaign.name}")
 print(f"    Budget: ${daily_budget_cents/100:.2f}/day")
-print(f"    Dates:  {row.campaign.start_date} → {row.campaign.end_date}")
+print(f"    Dates:  {row.campaign.start_date_time} → {row.campaign.end_date_time}")
 
 # 2. Upsert into Supabase campaign state
 print(f"\n── Seeding belgium_campaign_state ─────────────────")
@@ -72,8 +72,8 @@ state_row = {
     "campaign_name": row.campaign.name,
     "status": row.campaign.status.name,
     "daily_budget_cents": daily_budget_cents,
-    "start_date": row.campaign.start_date,
-    "end_date": row.campaign.end_date,
+    "start_date": row.campaign.start_date_time,
+    "end_date": row.campaign.end_date_time,
     "spend_to_date_cents": 0,
     "conversions_to_date": 0,
     "revenue_to_date_cents": 0,

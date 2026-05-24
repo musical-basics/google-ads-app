@@ -16,4 +16,5 @@ venv
 client_secret_*.json
 New Ads/
 *.mp4
-*.fcpbundle
+chrome_profile/
+inspect.png

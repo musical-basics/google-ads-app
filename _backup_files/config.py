@@ -69,16 +69,14 @@ ACTIVE_CAMPAIGNS = [CAMPAIGN_2_ID, CAMPAIGN_3_ID]
 UTM_CONTENT_SUBSCRIBERS = "subscribers"
 UTM_CONTENT_VIEWERS     = "video_viewers"
 
-VALUETRACK_SUFFIX = "&gad_campaignid={campaignid}&gad_adgroupid={adgroupid}&gad_creative={creative}"
-
 # Full final_url_suffix per ad group (source of truth — matches what's set in Google Ads)
 FINAL_URL_SUFFIX = {
-    AG1_SUBSCRIBERS: f"utm_source={UTM_SOURCE}&utm_medium={UTM_MEDIUM}&utm_campaign={UTM_CAMPAIGN_1}&utm_content={UTM_CONTENT_SUBSCRIBERS}{VALUETRACK_SUFFIX}",
-    AG1_VIEWERS:     f"utm_source={UTM_SOURCE}&utm_medium={UTM_MEDIUM}&utm_campaign={UTM_CAMPAIGN_1}&utm_content={UTM_CONTENT_VIEWERS}{VALUETRACK_SUFFIX}",
-    AG2_SUBSCRIBERS: f"utm_source={UTM_SOURCE}&utm_medium={UTM_MEDIUM}&utm_campaign={UTM_CAMPAIGN_2}&utm_content={UTM_CONTENT_SUBSCRIBERS}{VALUETRACK_SUFFIX}",
-    AG2_VIEWERS:     f"utm_source={UTM_SOURCE}&utm_medium={UTM_MEDIUM}&utm_campaign={UTM_CAMPAIGN_2}&utm_content={UTM_CONTENT_VIEWERS}{VALUETRACK_SUFFIX}",
-    AG3_SUBSCRIBERS: f"utm_source={UTM_SOURCE}&utm_medium={UTM_MEDIUM}&utm_campaign={UTM_CAMPAIGN_3}&utm_content={UTM_CONTENT_SUBSCRIBERS}{VALUETRACK_SUFFIX}",
-    AG3_VIEWERS:     f"utm_source={UTM_SOURCE}&utm_medium={UTM_MEDIUM}&utm_campaign={UTM_CAMPAIGN_3}&utm_content={UTM_CONTENT_VIEWERS}{VALUETRACK_SUFFIX}",
+    AG1_SUBSCRIBERS: f"utm_source={UTM_SOURCE}&utm_medium={UTM_MEDIUM}&utm_campaign={UTM_CAMPAIGN_1}&utm_content={UTM_CONTENT_SUBSCRIBERS}",
+    AG1_VIEWERS:     f"utm_source={UTM_SOURCE}&utm_medium={UTM_MEDIUM}&utm_campaign={UTM_CAMPAIGN_1}&utm_content={UTM_CONTENT_VIEWERS}",
+    AG2_SUBSCRIBERS: f"utm_source={UTM_SOURCE}&utm_medium={UTM_MEDIUM}&utm_campaign={UTM_CAMPAIGN_2}&utm_content={UTM_CONTENT_SUBSCRIBERS}",
+    AG2_VIEWERS:     f"utm_source={UTM_SOURCE}&utm_medium={UTM_MEDIUM}&utm_campaign={UTM_CAMPAIGN_2}&utm_content={UTM_CONTENT_VIEWERS}",
+    AG3_SUBSCRIBERS: f"utm_source={UTM_SOURCE}&utm_medium={UTM_MEDIUM}&utm_campaign={UTM_CAMPAIGN_3}&utm_content={UTM_CONTENT_SUBSCRIBERS}",
+    AG3_VIEWERS:     f"utm_source={UTM_SOURCE}&utm_medium={UTM_MEDIUM}&utm_campaign={UTM_CAMPAIGN_3}&utm_content={UTM_CONTENT_VIEWERS}",
 }
 
 # Attribution lookup: utm_campaign+utm_content → human label

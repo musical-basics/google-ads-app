@@ -13,7 +13,7 @@ client = get_client()
 svc = client.get_service("GoogleAdsService")
 rows = svc.search(
     customer_id=customer_id(),
-    query=f"SELECT campaign.id, campaign.name, campaign.status FROM campaign WHERE campaign.id = {cid}",
+    query=f"SELECT campaign.id, campaign.name, campaign.status, campaign.start_date_time, campaign.end_date_time FROM campaign WHERE campaign.id = {cid}",
 )
 for r in rows:
-    print(r.campaign.id, "|", r.campaign.name, "|", r.campaign.status.name)
+    print(r.campaign.id, "|", r.campaign.name, "|", r.campaign.status.name, "|", r.campaign.start_date_time, "|", r.campaign.end_date_time)
