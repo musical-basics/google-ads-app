@@ -152,6 +152,7 @@ def parse_order_to_row(node: dict) -> dict | None:
         "utm_campaign": utms.get("utm_campaign"),
         "utm_content": utms.get("utm_content"),
         "utm_term": utms.get("utm_term"),
+        "gclid": utms.get("gclid"),
         "landing_site": landing,
         "ordered_at": node.get("createdAt"),
         "ad_attributed": ad_attributed,
@@ -161,17 +162,17 @@ def parse_order_to_row(node: dict) -> dict | None:
 
 def _extract_utms(landing_url: str, custom_attrs: list[dict]) -> dict:
     """
-    Pull UTM params from the landing URL query string, falling back to order
-    custom attributes (cart attributes preserved through checkout).
+    Pull UTM params AND gclid from the landing URL query string, falling back
+    to order custom attributes (cart attributes preserved through checkout).
     """
     utms: dict[str, str] = {}
     if landing_url:
         qs = parse_qs(urlparse(landing_url).query)
-        for k in ("utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"):
+        for k in ("utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term", "gclid"):
             if k in qs and qs[k]:
                 utms[k] = qs[k][0]
     for attr in custom_attrs or []:
         key = (attr.get("key") or "").lower()
-        if key in ("utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"):
+        if key in ("utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term", "gclid"):
             utms.setdefault(key, attr.get("value") or "")
     return utms
