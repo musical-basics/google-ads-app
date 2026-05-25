@@ -16,11 +16,14 @@ from dateutil.parser import parse
 
 from . import google_ads_client
 
-# Map event names → Google Ads conversion action names
+# Map event names → Google Ads conversion action names.
+# NOTE: "Shopify Purchase" intentionally differs from the existing WEBPAGE_CODELESS
+# "Purchase" action so the upload pipeline creates its own UPLOAD_CLICKS action.
+# Click conversions cannot be uploaded to WEBPAGE_CODELESS actions.
 CONVERSION_ACTIONS = {
     "cta_click":     "CTA Click",
     "generate_lead": "Waitlist Signup",
-    "purchase":      "Purchase",
+    "purchase":      "Shopify Purchase",
 }
 
 # Google Ads max conversion window is 90 days; use 89 to be safe.
@@ -55,7 +58,7 @@ def get_or_create_conversion_action(client, customer_id, name):
 
     if name == "Waitlist Signup":
         ca.category = client.enums.ConversionActionCategoryEnum.SUBMIT_LEAD_FORM
-    elif name == "Purchase":
+    elif name == "Shopify Purchase":
         ca.category = client.enums.ConversionActionCategoryEnum.PURCHASE
     else:
         ca.category = client.enums.ConversionActionCategoryEnum.OUTBOUND_CLICK
@@ -81,11 +84,18 @@ def _is_within_window(created_at_str: str) -> bool:
         return False
 
 
+def _click_id_from(source: dict) -> tuple[str | None, str | None, str | None]:
+    """Return (gclid, wbraid, gbraid) from a dict (analytics metadata or parsed UTMs).
+    Only one will be present per click — gclid for standard web, wbraid/gbraid for
+    privacy-restricted (iOS Safari, some Android) flows."""
+    return source.get("gclid"), source.get("wbraid"), source.get("gbraid")
+
+
 def fetch_supabase_logs(hours=48):
     """
     Fetch recent cta_click and generate_lead logs from Supabase analytics_logs.
-    Only returns events with a gclid and within the 89-day window.
-    Deduplicates by (gclid, event_name).
+    Only returns events with a click id (gclid OR wbraid OR gbraid) and within the
+    89-day window. Deduplicates by (click_id, event_name).
     """
     from supabase import create_client, ClientOptions
     url = os.environ.get("ANALYTICS_SUPABASE_URL") or os.environ.get("SUPABASE_URL")
@@ -100,7 +110,7 @@ def fetch_supabase_logs(hours=48):
     rows = res.data or []
 
     conversions = []
-    seen = set()  # dedup by (gclid, event_name)
+    seen = set()  # dedup by (click_id, event_name)
 
     for r in rows:
         event_name = r.get("event_name")
@@ -108,21 +118,24 @@ def fetch_supabase_logs(hours=48):
             continue
 
         metadata = r.get("metadata") or {}
-        gclid = metadata.get("gclid")
-        if not gclid:
+        gclid, wbraid, gbraid = _click_id_from(metadata)
+        click_id = gclid or wbraid or gbraid
+        if not click_id:
             continue
 
         created_at = r.get("created_at", "")
         if not _is_within_window(created_at):
             continue
 
-        dedup_key = (gclid, event_name)
+        dedup_key = (click_id, event_name)
         if dedup_key in seen:
             continue
         seen.add(dedup_key)
 
         conversions.append({
             "gclid": gclid,
+            "wbraid": wbraid,
+            "gbraid": gbraid,
             "created_at": created_at,
             "event_name": event_name,
             "metadata": metadata,
@@ -154,8 +167,9 @@ def fetch_shopify_purchases(hours=48):
         if not row:
             continue
 
-        gclid = row.get("gclid")
-        if not gclid:
+        gclid, wbraid, gbraid = _click_id_from(row)
+        click_id = gclid or wbraid or gbraid
+        if not click_id:
             continue
 
         ordered_at = row.get("ordered_at", "")
@@ -163,7 +177,7 @@ def fetch_shopify_purchases(hours=48):
             continue
 
         order_id = row["shopify_order_id"]
-        dedup_key = (gclid, order_id)
+        dedup_key = (click_id, order_id)
         if dedup_key in seen:
             continue
         seen.add(dedup_key)
@@ -173,6 +187,8 @@ def fetch_shopify_purchases(hours=48):
 
         conversions.append({
             "gclid": gclid,
+            "wbraid": wbraid,
+            "gbraid": gbraid,
             "created_at": ordered_at,
             "event_name": "purchase",
             "metadata": {"shopify_order_id": order_id, "tier": row.get("ticket_tier")},
@@ -194,11 +210,17 @@ def upload_conversions(client, customer_id, conversions, action_map, dry_run=Fal
 
     for conv in conversions:
         event_name = conv["event_name"]
-        gclid = conv["gclid"]
         action_name = CONVERSION_ACTIONS.get(event_name)
         action_resource = action_map.get(action_name)
 
         if not action_resource:
+            continue
+
+        # Exactly one of gclid / wbraid / gbraid must be set per click conversion.
+        gclid = conv.get("gclid")
+        wbraid = conv.get("wbraid")
+        gbraid = conv.get("gbraid")
+        if not (gclid or wbraid or gbraid):
             continue
 
         # Parse and re-format date for Google Ads (yyyy-mm-dd HH:mm:ss+|-HH:mm)
@@ -212,7 +234,12 @@ def upload_conversions(client, customer_id, conversions, action_map, dry_run=Fal
 
         click_conv = client.get_type("ClickConversion")
         click_conv.conversion_action = action_resource
-        click_conv.gclid = gclid
+        if gclid:
+            click_conv.gclid = gclid
+        elif wbraid:
+            click_conv.wbraid = wbraid
+        elif gbraid:
+            click_conv.gbraid = gbraid
         click_conv.conversion_date_time = formatted_date
         click_conv.conversion_value = float(conv.get("conversion_value", 1.0))
         click_conv.currency_code = conv.get("currency", "EUR")
@@ -240,7 +267,8 @@ def upload_conversions(client, customer_id, conversions, action_map, dry_run=Fal
     success_count = 0
     fail_count = 0
     for result in resp.results:
-        if result.gclid:
+        # A successful upload echoes back at least one click identifier.
+        if result.gclid or result.wbraid or result.gbraid:
             success_count += 1
         else:
             fail_count += 1
