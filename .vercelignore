@@ -1,0 +1,36 @@
+# Vercel-only ignore (separate from .gitignore so the CLI honors it explicitly).
+# Keep this in sync with the heavy local-only directories below.
+
+node_modules
+.next
+.git
+.vercel
+
+# Python local env / caches
+.venv
+venv
+__pycache__
+*.pyc
+.python-version
+
+# Editor / OS
+.DS_Store
+.idea
+.vscode
+
+# Secrets
+.env
+.env.local
+.env.*.local
+client_secret_*.json
+
+# Large local-only assets (~970MB combined — never needed in serverless bundle)
+chrome_profile
+New Ads
+*.mp4
+_backup_files
+inspect.png
+
+# Docs / backups not used at runtime
+docs
+*.log
