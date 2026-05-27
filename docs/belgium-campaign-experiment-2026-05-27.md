@@ -1,6 +1,31 @@
 # Belgium Concert — Active Campaign Experiment (snapshot 2026-05-27)
 
-Concert date: **2026-06-11**. Decision review date: **2026-06-01** (5 days from snapshot).
+Concert date: **2026-06-11**.
+Decision review date: **2026-05-30** (interim, when credit likely activates) → **2026-06-01** (full prune).
+
+## Google Ads credit milestone — DO NOT lower budgets before this
+
+Active Google Ads promo: **spend $500 → receive $1000 ad credit**.
+
+- Lifetime spend as of 2026-05-27 = **$328.29**
+- Need ~$172 more to trigger credit
+- At current ~$70–90/day run rate, hits threshold around **2026-05-29 or 2026-05-30**
+- **Do not lower any budgets before reaching $500.** Lowering delays the trigger; doesn't save real money.
+- **Do not artificially accelerate either.** Google's offers care about hitting the threshold, not speed.
+
+### Verify before relying on the credit
+
+In Google Ads UI: **Billing → Promotions**. Confirm:
+- The offer is active on this account
+- You're within the eligibility window (typically "first 60 days of spend")
+- The redemption mechanic (email link, promo code, etc.)
+- The credit's usage window once issued (typically 60–90 days)
+
+### When the credit lands (probably 2026-05-29 / 05-30)
+
+- Effective budget jumps from ~$80/day real spend to ~$160/day total ($80 real + $80 credit) for the remaining ~12 days
+- **Don't spread the $1000 across all 4 campaigns evenly.** Use the 3 days of conversion data (May 27–30) to identify the campaign with the best real-money CPA, and concentrate the credit into the winner. Concentrated bets win in short windows.
+- Update budget table here when the credit hits + winner is chosen.
 
 ## Live campaigns
 
@@ -33,9 +58,18 @@ Concert date: **2026-06-11**. Decision review date: **2026-06-01** (5 days from 
 
 **Known gap**: Shopify orders that arrive with no click id (because the customer returned "directly" on a later session) are NOT auto-uploaded by the cron. hiamusic's purchase fell into this gap and had to be uploaded manually. To close this fully, the cron would need to look up the buyer's analytics history by email/IP and recover the original click id — not yet built.
 
-## Decision rules for 2026-06-01
+## Decision rules
 
-Apply after the 4 live campaigns have ~5 days of post-tracking-fix data.
+### Interim check on 2026-05-30 (when credit likely lands)
+
+Use 3 days of conversion data (post-tracking-fix on 05-27) to **pick the campaign to concentrate the $1000 credit into**.
+
+- **Best campaign so far** = lowest CPA on Shopify Purchase conversions, OR highest CTA-click rate if no purchases yet, OR best CPV+engagement combination if neither
+- Bump that campaign's budget by **+$80/day** for the next ~12 days (eating the credit)
+- Leave the other 3 campaigns at current budgets so the A/B test continues to surface signal
+- If no campaign has any conversions by 05-30, default the credit into the **DG campaign** (`Belgium Concert - New Creative`) since it has the only confirmed view-through purchase (hiamusic, $67) and the strongest engagement signal in the data
+
+### Full prune on 2026-06-01 (5 days post-snapshot)
 
 ### Warm campaigns (#1 vs #2 — the AE+NL test)
 
@@ -58,6 +92,7 @@ Apply after the 4 live campaigns have ~5 days of post-tracking-fix data.
 
 ## Things NOT to do before 2026-06-01
 
+- **Don't lower any campaign budgets before lifetime spend hits $500** — would delay the credit trigger.
 - Don't add a second Demand Gen campaign with "different creative". MAX_CONVERSIONS needs consolidated conversion data; splitting it slows learning.
 - Don't pause anything for "consolidation" reasons — TARGET_CPV doesn't fragment learning the way MAX_CONVERSIONS does. Pause based on data, not symmetry.
 - Don't change the bidding strategy on #4 to TARGET_CPA yet. TARGET_CPA needs 10–30 conversions of history to function; we have 2 seeds.
