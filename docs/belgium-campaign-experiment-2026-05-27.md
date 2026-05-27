@@ -35,13 +35,13 @@ In Google Ads UI: **Billing → Promotions**. Confirm:
 | 2 | `belgium_new_creative_yt added NL` | 23884972699 | VIDEO | TARGET_CPV | (check) | warm: same as #1 | BE + NL | **ON** | Does Audience Expansion + NL grow the warm pool profitably, or dilute it? |
 | 3 | `belgium_new_creative_yt with cold audience` | 23875386621 | VIDEO | TARGET_CPV $0.30 | $15/day | Custom Intent (cold): "belgium piano concert", "musicalbasics", etc. (audience id 980902472) | BE + NL + LU | ON | Can cold custom-intent searchers convert at acceptable CPA? |
 | 4 | `Belgium Concert - New Creative (May 2026)` | 23871037379 | DEMAND_GEN | MAXIMIZE_CONVERSIONS | $40/day | YT video viewers | (DG default) | n/a | Produced hiamusic ($67.42 view-through). Re-enabled 2026-05-27 after analytics caught the missed attribution. |
+| 5 | `Belgium Concert - Original Creative (May 2026)` | 23875661669 | DEMAND_GEN | MAXIMIZE_CONVERSIONS | $20/day | YT video viewers | (DG default) | n/a | Re-enabled 2026-05-27. DG showed higher engagement + conversion rate than VIDEO campaigns in 48h data, and the original $35/0 conv verdict was made when bidder optimized on follow-on views — different ballgame with Shopify Purchase now Primary. |
 
 ## Paused (do not unpause without re-evaluating)
 
 | Campaign | ID | Why paused |
 |---|---|---|
 | `belgium_original_yt` | 23868517434 | User paused — old creative |
-| `Belgium Concert - Original Creative (May 2026)` | 23875661669 | DG with original creative, $35 spent / 0 attributed sales |
 | `Belgium Campaign May 13` | 23837741178 | TARGET_SPEND blew $41 in 1 day with 0 conversions |
 
 ## Conversion tracking — closed-loop as of 2026-05-27
@@ -64,10 +64,21 @@ In Google Ads UI: **Billing → Promotions**. Confirm:
 
 Use 3 days of conversion data (post-tracking-fix on 05-27) to **pick the campaign to concentrate the $1000 credit into**.
 
-- **Best campaign so far** = lowest CPA on Shopify Purchase conversions, OR highest CTA-click rate if no purchases yet, OR best CPV+engagement combination if neither
-- Bump that campaign's budget by **+$80/day** for the next ~12 days (eating the credit)
-- Leave the other 3 campaigns at current budgets so the A/B test continues to surface signal
-- If no campaign has any conversions by 05-30, default the credit into the **DG campaign** (`Belgium Concert - New Creative`) since it has the only confirmed view-through purchase (hiamusic, $67) and the strongest engagement signal in the data
+- **Decision is data-driven — don't pre-commit to a channel.** Wait to see which campaign(s) actually produce Shopify Purchase conversions in the May 27–30 window before allocating.
+- **Best campaign** = lowest CPA on Shopify Purchase conversions
+- If no campaign has any conversions by 05-30: rank by Shopify-CTA-click rate; if still tied, rank by engagement (≥30s session %) from analytics_logs
+- Bump the winner's budget by **+$80/day** for the next ~12 days (eating the credit)
+- Leave the other campaigns at current budgets so the A/B test continues to surface signal
+
+### Note: DG vs VIDEO so far (48h sample, small N — informational only)
+
+In the 48h before snapshot, DG outperformed VIDEO on every dimension that matters:
+- Deep engagement rate (≥30s): DG 33% vs VIDEO 22%
+- CTA click rate: DG 67% vs VIDEO 11%
+- Per-session conversion rate: DG 16.7% vs VIDEO 5.6%
+- Per-session revenue: DG $11.20 vs VIDEO $1.87
+
+This is **informational, not deciding**. N = 6 DG sessions vs 18 VIDEO; one outlier (3,745s tab-left-open) inflates DG. But there's a structural reason DG could be better: MAX_CONVERSIONS selects for likely-buyers, while TARGET_CPV selects for cheap-watchers. Worth keeping an eye on this when the 05-30 conversion data comes in.
 
 ### Full prune on 2026-06-01 (5 days post-snapshot)
 
