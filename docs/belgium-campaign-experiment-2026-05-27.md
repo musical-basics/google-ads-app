@@ -32,7 +32,7 @@ In Google Ads UI: **Billing → Promotions**. Confirm:
 | # | Campaign | ID | Channel | Strategy | Budget | Audience | Geo | AE | Hypothesis |
 |---|---|---|---|---|---|---|---|---|---|
 | 1 | `belgium_new_creative_yt` | 23873822810 | VIDEO | TARGET_CPV $0.30 | $40/day | warm: YT subs + video viewers | BE | OFF | Control. Produced thaituanminh55 ($33.76). |
-| 2 | `belgium_new_creative_yt added NL` | 23884972699 | VIDEO | TARGET_CPV | (check) | warm: same as #1 | BE + NL | **ON** | Does Audience Expansion + NL grow the warm pool profitably, or dilute it? |
+| 2 | `belgium_new_creative_yt diaspora_fans` (renamed from `added NL` 2026-05-28) | 23884972699 | VIDEO | TARGET_CPV | $40/day | warm: YT subscribers only (video_viewers ad group PAUSED 2026-05-28) | BE + NL + LU + UK + FR + DE | **ON** | Find more Dianas — confirmed MB fans (YT subscribers) anywhere within Eurostar/Thalys range to Zaventem. Inspired by Diana Krilova ($134 VIP, London, organic via uk.musicalbasics.com). |
 | 3 | `belgium_new_creative_yt with cold audience` | 23875386621 | VIDEO | TARGET_CPV $0.30 | $15/day | Custom Intent (cold): "belgium piano concert", "musicalbasics", etc. (audience id 980902472) | BE + NL + LU | ON | Can cold custom-intent searchers convert at acceptable CPA? |
 | 4 | `Belgium Concert - New Creative (May 2026)` | 23871037379 | DEMAND_GEN | MAXIMIZE_CONVERSIONS | $40/day | YT video viewers | (DG default) | n/a | Produced hiamusic ($67.42 view-through). Re-enabled 2026-05-27 after analytics caught the missed attribution. |
 | 5 | `Belgium Concert - Original Creative (May 2026)` | 23875661669 | DEMAND_GEN | MAXIMIZE_CONVERSIONS | $20/day | YT video viewers | (DG default) | n/a | Re-enabled 2026-05-27. DG showed higher engagement + conversion rate than VIDEO campaigns in 48h data, and the original $35/0 conv verdict was made when bidder optimized on follow-on views — different ballgame with Shopify Purchase now Primary. |
@@ -59,6 +59,21 @@ In Google Ads UI: **Billing → Promotions**. Confirm:
 **Known gap**: Shopify orders that arrive with no click id (because the customer returned "directly" on a later session) are NOT auto-uploaded by the cron. hiamusic's purchase fell into this gap and had to be uploaded manually. To close this fully, the cron would need to look up the buyer's analytics history by email/IP and recover the original click id — not yet built.
 
 ## Decision rules
+
+### Audience Expansion monitoring rule for `belgium_new_creative_yt diaspora_fans` (added 2026-05-28)
+
+This campaign has Audience Expansion ON in the `subscribers_and_viewers` ad group, so Google will reach beyond your YT subscriber seed to "people similar to subscribers" in the 6 included countries. That's intentional — the whole point is to find more Dianas.
+
+**Review on 2026-05-29** (1 day after geo expansion). Pull AE off if EITHER:
+
+- New visitors from UK / FR / DE arrive but median dwell is <15s and zero CTA clicks. That means Google's "similar to subscriber" definition is too loose for these geos and we're paying for low-interest fans-of-fans-of-fans.
+- Spend ramps significantly (e.g., >$25/day on this campaign) while CTR drops below 0.3% across the campaign. AE is finding cheap inventory at the cost of fan quality.
+
+If either trigger fires, turn AE off in the ad group (UI: Ad groups → subscribers_and_viewers → Settings → Audience expansion → Off). With AE off, the campaign will only serve to your literal YT subscriber list across the 6 geos — much tighter, much smaller, but very high-intent.
+
+### Cold custom intent campaign — kill switch on 2026-05-29
+
+`belgium_new_creative_yt with cold audience` (id 23875386621) was reduced to $20/day on 2026-05-28. User's assessment: cold custom intent is producing noise, not Dianas. If by EOD 2026-05-29 it has 0 attributed Shopify Purchase conversions, **pause it** and move that budget to the diaspora campaign.
 
 ### Interim check on 2026-05-30 (when credit likely lands)
 
