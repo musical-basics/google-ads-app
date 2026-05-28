@@ -34,8 +34,10 @@ In Google Ads UI: **Billing → Promotions**. Confirm:
 | 1 | `belgium_new_creative_yt` | 23873822810 | VIDEO | TARGET_CPV $0.30 | $40/day | warm: YT subs + video viewers | BE | OFF | Control. Produced thaituanminh55 ($33.76). |
 | 2 | `belgium_new_creative_yt diaspora_fans` (renamed from `added NL` 2026-05-28) | 23884972699 | VIDEO | TARGET_CPV | $40/day | warm: YT subscribers only (video_viewers ad group PAUSED 2026-05-28) | BE + NL + LU + UK + FR + DE | **ON** | Find more Dianas — confirmed MB fans (YT subscribers) anywhere within Eurostar/Thalys range to Zaventem. Inspired by Diana Krilova ($134 VIP, London, organic via uk.musicalbasics.com). |
 | 3 | `belgium_new_creative_yt with cold audience` | 23875386621 | VIDEO | TARGET_CPV $0.30 | $15/day | Custom Intent (cold): "belgium piano concert", "musicalbasics", etc. (audience id 980902472) | BE + NL + LU | ON | Can cold custom-intent searchers convert at acceptable CPA? |
-| 4 | `Belgium Concert - New Creative (May 2026)` | 23871037379 | DEMAND_GEN | MAXIMIZE_CONVERSIONS | $40/day | YT video viewers | (DG default) | n/a | Produced hiamusic ($67.42 view-through). Re-enabled 2026-05-27 after analytics caught the missed attribution. |
-| 5 | `Belgium Concert - Original Creative (May 2026)` | 23875661669 | DEMAND_GEN | MAXIMIZE_CONVERSIONS | $20/day | YT video viewers | (DG default) | n/a | Re-enabled 2026-05-27. DG showed higher engagement + conversion rate than VIDEO campaigns in 48h data, and the original $35/0 conv verdict was made when bidder optimized on follow-on views — different ballgame with Shopify Purchase now Primary. |
+| 4 | `Belgium Concert - New Creative (May 2026)` | 23871037379 | DEMAND_GEN | MAXIMIZE_CONVERSIONS | $40/day | YT video viewers | BE+NL+LU+UK+FR+DE | n/a | Produced hiamusic ($67.42 view-through). Re-enabled 2026-05-27. Geo expanded from BE+LU to 6-country reasonable-travel range on 2026-05-28. |
+| 5 | `Belgium Concert - Original Creative (May 2026)` | 23875661669 | DEMAND_GEN | MAXIMIZE_CONVERSIONS | $20/day | YT video viewers | BE+NL+LU+UK+FR+DE | n/a | Re-enabled 2026-05-27. Geo expanded from BE+LU+NL to 6-country range on 2026-05-28. |
+
+**Important: DG campaigns set geo at the ad-group level, NOT campaign level.** Query `ad_group_criterion` (not `campaign_criterion`) to inspect, and mutate via `AdGroupCriterionService` to update. `campaign_criterion` is empty for DG = misleading — looks like global targeting but isn't.
 
 ## Paused (do not unpause without re-evaluating)
 
