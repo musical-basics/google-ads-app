@@ -222,3 +222,93 @@ Audience IDs are fetched via:
 ```python
 SELECT user_list.id, user_list.name FROM user_list
 ```
+
+---
+
+## 13. Legacy `VIDEO` Channel-Type Campaigns Are Effectively Read-Only via API
+
+**Problem:** Any campaign with `campaign.advertising_channel_type == VIDEO`
+(the legacy YouTube channel type, predecessor to Demand Gen) rejects
+mutations via the API. In this account that's `belgium_original_yt`,
+`belgium_new_creative_yt`, `..._with_cold_audience`, `..._diaspora_fans`.
+
+Confirmed blocked operations (verified 2026-05-29 → 2026-05-30):
+
+| Operation | Service | Error |
+|---|---|---|
+| Pause / re-enable campaign | `CampaignService.MutateCampaigns` | `MUTATE_NOT_ALLOWED, trigger=VIDEO` (clean) |
+| Change campaign-level budget link | `CampaignService.MutateCampaigns` | same |
+| Create a new ad in an ad group | `AdGroupAdService.MutateAdGroupAds` | `REQUIRED at video_responsive_ad` (misleading) |
+
+The `CampaignBudgetService` itself still works (you can update budget amount),
+but anything that mutates the `Campaign` object or its ads is rejected.
+
+**The misleading-error pattern:** when v24 doesn't allow an operation on a
+legacy resource type, it sometimes returns `field_error: REQUIRED` on a
+parent message with **no specific subfield path**, instead of the clean
+`MUTATE_NOT_ALLOWED`. Same pattern as the `OWNED_AND_OPERATED` rejection
+on DG `campaign_criterion` (see Gotcha #2). **Diagnostic:** if you get
+`REQUIRED` on a parent proto message with no child field indicated, and
+adding obvious missing fields doesn't change the error, stop trying
+variants — the operation is genuinely not permitted on that resource type.
+
+**Workaround:** all changes to VIDEO campaigns (pause, ad creation,
+creative refresh) must be done in the Google Ads UI. The campaigns
+themselves still serve and spend normally.
+
+**Tried and confirmed not to work** for ad creation on VIDEO campaigns:
+- `video_responsive_ad` with 1, 3, 5 headlines
+- with and without `logo_images`
+- with and without `companion_banners`
+- with breadcrumbs set (also has its own constraints: no `.`, max ~15 chars)
+- `in_feed_video_ad` (not even a valid field on `Ad` in v24)
+
+---
+
+## 14. `campaign_budget.explicitly_shared` Is Immutable Post-Creation
+
+**Problem:** Demand Gen campaigns with `maximize_conversions` bidding
+**require** `campaign_budget.explicitly_shared = False`. The default when
+creating a budget is `True` (shared), which causes campaign creation to
+fail with `BIDDING_STRATEGY_TYPE_INCOMPATIBLE_WITH_SHARED_BUDGET`.
+
+**Gotcha:** This flag **cannot be changed after the budget is created**.
+Attempting to `mutate_campaign_budgets` with `update.explicitly_shared = False`
+on an existing shared budget returns:
+
+```
+"The error code is not in this version." location: explicitly_shared
+```
+
+(another instance of the misleading-error pattern from Gotcha #13).
+
+**Fix:** Always set `explicitly_shared = False` at create time:
+```python
+budget.amount_micros = 20_000_000
+budget.delivery_method = client.enums.BudgetDeliveryMethodEnum.STANDARD
+budget.explicitly_shared = False   # required for DG + maximize_conversions
+```
+
+If you forget, the orphan budget cannot be salvaged — create a fresh one
+and leave the orphan unreferenced. Orphan budgets don't spend (no campaign
+links to them) but they clutter the account; delete in the UI if you care.
+
+---
+
+## 15. Ads Are Immutable Post-Creation — To "Update" an Ad, Create a New One
+
+**Problem:** Once an `AdGroupAd` is created, you cannot modify its creative
+content — headlines, descriptions, videos, logos, CTAs are all locked. Only
+`status`, `final_urls`, `tracking_url_template`, and `url_custom_parameters`
+can be updated. Trying to add a video to an existing ad's `videos` list
+via update isn't possible.
+
+**Workaround:** Create a NEW ad in the same ad group with the additional
+creative. Both ads serve in parallel and Google's optimizer picks winners.
+This is what `scripts/add_trailer_to_other_campaigns.py` does — it adds a
+trailer-video ad alongside the existing trimmed-creative ad in each ad
+group, so each ad group ends up with 2 ads competing.
+
+This is intentional design from Google: the only way to "test" a new
+creative is to run it as a parallel ad, which gives Google's smart bidding
+clean A/B signal.
