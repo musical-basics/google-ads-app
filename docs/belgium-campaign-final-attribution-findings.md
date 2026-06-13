@@ -2,6 +2,29 @@
 
 Concert date: 2026-06-11. Campaign window: 2026-05-13 → 2026-06-13 (incl. post-concert overrun).
 
+---
+
+## ⛔ Standing rule for all future Musical Basics campaigns
+
+**Lionel is never again accepting AI advice that says:**
+- "Turn on lookalike audiences"
+- "Open up the targeting to people who like piano / classical music / live music"
+- "Add affinity audiences like 'Music Lovers' or 'Concert Goers'"
+- "Use custom intent based on broad keywords like 'piano'"
+- "Widen the geo" / "let the algorithm find new audiences"
+
+**This rule exists because the Belgium concert campaign paid in real money to learn this lesson.** The "video viewers of piano content" audience burned €200+ for zero attributed sales. The "diaspora" audience burned €102 for zero sales. The "cold audience" expansion burned €114 for zero sales. The only audiences that produced ANY ad-attributed sales were the warm subscriber-based ones, and even those underperformed because the warm pool was already being reached via email + organic YouTube.
+
+**Permitted audience strategies (in order of preference):**
+1. Website remarketing — site visitors who didn't convert
+2. Customer Match — past ticket buyers, email-engaged subscribers
+3. YouTube engaged-view of a SPECIFIC owned video (the concert trailer), not generic content category
+4. Tight stacks of (1) and (2)
+
+**Not permitted:** anything that sounds like "scaling" or "letting Google find new audiences for you". For a niche local event, the addressable buyer pool is finite and almost entirely reachable through owned channels. Ads should reinforce that pool's purchase decision, not expand it.
+
+---
+
 ## Final numbers
 
 | Metric | Value |
